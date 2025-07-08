@@ -1,4 +1,19 @@
-# trainedProject
+目前我做了JAVA 已经八年了！但是想往高级工程师和架构师冲击！所以才去学习！
+## 提升技术 
 
-Mainly some test cases for springboot 5 and algorithm problem document images 28/10000 real-time translation and mapping
-Mainly some test cases and algorithm questions for Spring Boot 5
+>1. 我觉得我真背不进那些面试题，八股文！有长有臭。
+>2. 从场景入手，做好细节把控！
+>3. 做项目分俩种，在我看来哦！可能点评有点片面   
+    3.1：TOB,TOC项目，一个是面向企业项目（并发不高），一个是面向消费者项目(高并发)
+>4. 废话不多说
+
+
+
+## 分布式系统设计关系
+> 订单超时自动关闭（电商场景）   
+> 
+
+
+
+
+
