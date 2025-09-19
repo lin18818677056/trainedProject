@@ -40,7 +40,10 @@ HashMap 的底层实现经历了几个版本的变化：
 JDK 1.8 中的 hash 函数：
 ```
 java 
-static final int hash(Object key) { int h; return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16); }
+static final int hash(Object key) {
+ int h; 
+ return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16); 
+}
 ```
 
 通过将 hashCode 的高16位与低16位进行异或运算，增加低位的随机性，减少哈希冲突。
@@ -86,13 +89,17 @@ HashMap 是非线程安全的，在多线程环境下可能会出现以下问题
 #### Node<K,V> 节点类（链表节点）
 
 ```
-java static class Node<K,V> implements Map.Entry<K,V> { final int hash; final K key; V value; Node<K,V> next;
-Node(int hash, K key, V value, Node<K,V> next) {
-    this.hash = hash;
-    this.key = key;
-    this.value = value;
-    this.next = next;
-}
+java static class Node<K,V> implements Map.Entry<K,V> {
+ final int hash;
+ final K key; 
+ V value; 
+ Node<K,V> next;
+ Node(int hash, K key, V value, Node<K,V> next) {
+       this.hash = hash;
+       this.key = key;
+       this.value = value;
+       this.next = next;
+ }
 
 // ... 其他方法
 }
@@ -100,10 +107,20 @@ Node(int hash, K key, V value, Node<K,V> next) {
 #### TreeNode<K,V> 红黑树节点类
 ```
 java 
-static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> { TreeNode<K,V> parent; // 红黑树父节点 TreeNode<K,V> left; // 红黑树左子节点 TreeNode<K,V> right; // 红黑树右子节点 TreeNode<K,V> prev; // 链表前驱节点 boolean red; // 颜色属性
-TreeNode(int hash, K key, V val, Node<K,V> next) {
-    super(hash, key, val, next);
-}
+static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
+ TreeNode<K,V> parent;
+  // 红黑树父节点 
+ TreeNode<K,V> left;
+  // 红黑树左子节点 
+ TreeNode<K,V> right; 
+ // 红黑树右子节点 
+ TreeNode<K,V> prev; 
+ // 链表前驱节点 
+ boolean red; 
+ // 颜色属性
+ TreeNode(int hash, K key, V val, Node<K,V> next) {
+       super(hash, key, val, next);
+ }
 
 // ... 红黑树相关操作方法
 }
@@ -112,7 +129,10 @@ TreeNode(int hash, K key, V val, Node<K,V> next) {
 
 #### hash() 方法
 ```
-java static final int hash(Object key) { int h; return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16); }
+java static final int hash(Object key) {
+ int h; 
+ return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16); 
+}
 
 
 ```
@@ -123,13 +143,37 @@ java static final int hash(Object key) { int h; return (key == null) ? 0 : (h = 
 java 
 public V put(K key, V value) { return putVal(hash(key), key, value, false, true); }
 final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) { Node<K,V>[] tab; Node<K,V> p; int n, i; // 如果table为空或者长度为0，则进行初始化 if ((tab = table) == null || (n = tab.length) == 0) n = (tab = resize()).length; // 如果对应索引位置没有元素，直接插入新节点 if ((p = tab[i = (n - 1) & hash]) == null) tab[i] = newNode(hash, key, value, null); else { Node<K,V> e; K k; // 如果第一个节点就是要找的节点，则直接覆盖 if (p.hash == hash && ((k = p.key) == key || (key != null && key.equals(k)))) e = p; // 如果是红黑树节点 else if (p instanceof TreeNode) e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value); else { // 遍历链表 for (int binCount = 0; ; ++binCount) { // 到达链表末尾，插入新节点 if ((e = p.next) == null) { p.next = newNode(hash, key, value, null); // 如果链表长度超过阈值，转换为红黑树 if (binCount >= TREEIFY_THRESHOLD - 1) treeifyBin(tab, hash); break; } // 找到相同key的节点，跳出循环 if (e.hash == hash && ((k = e.key) == key || (key != null && key.equals(k)))) break; p = e; } } // 如果找到了相同key的节点，更新value if (e != null) { V oldValue = e.value; if (!onlyIfAbsent || oldValue == null) e.value = value; afterNodeAccess(e); return oldValue; } } ++modCount; // 如果size超过阈值，进行扩容 if (++size > threshold) resize(); afterNodeInsertion(evict); return null; }
+
+
 ```
 #### get() 方法
 ```
 java 
-public V get(Object key) { Node<K,V> e; return (e = getNode(hash(key), key)) == null ? null : e.value; }
-final Node<K,V> getNode(int hash, Object key) { Node<K,V>[] tab; Node<K,V> first, e; int n; K k; if ((tab = table) != null && (n = tab.length) > 0 && (first = tab[(n - 1) & hash]) != null) { // 检查第一个节点是否匹配 if (first.hash == hash && ((k = first.key) == key || (key != null && key.equals(k)))) return first; // 遍历链表或红黑树 if ((e = first.next) != null) { // 如果是红黑树节点 if (first instanceof TreeNode) return ((TreeNode<K,V>)first).getTreeNode(hash, key); // 遍历链表 do { if (e.hash == hash && ((k = e.key) == key || (key != null && key.equals(k)))) return e; } while ((e = e.next) != null); } } return null; }
+public V get(Object key) {
+        Node<K, V> e;
+        return (e = getNode(hash(key), key)) == null ? null : e.value;
+}
 
+final Node<K, V> getNode(int hash, Object key) {
+        Node<K, V>[] tab;
+        Node<K, V> first, e;
+        int n;
+        K k;
+        if ((tab = table) != null && (n = tab.length) > 0 && (first = tab[(n - 1) & hash]) != null) {
+            // 检查第一个节点是否匹配 
+            if (first.hash == hash && ((k = first.key) == key || (key != null && key.equals(k)))) return first;
+            // 遍历链表或红黑树
+            if ((e = first.next) != null) {
+                // 如果是红黑树节点 
+                if (first instanceof TreeNode) return ((TreeNode<K, V>) first).getTreeNode(hash, key);
+                // 遍历链表 
+                do {
+                    if (e.hash == hash && ((k = e.key) == key || (key != null && key.equals(k)))) return e;
+                } while ((e = e.next) != null);
+            }
+        }
+        return null;
+}
 ```
 #### resize() 扩容方法
 ```
