@@ -58,3 +58,27 @@ FLUSH PRIVILEGES;
 macro123：加密后 （$2a$10$7dRMZZIEyjHFBTnwdFxyve6Sv3iUuVUzVlKDYixvETY694XIYXAWW）
 
 
+
+
+
+根据错误日志，问题出在 Elasticsearch 的索引映射配置中。具体错误信息表明：
+analyzer [ik_max_word] has not been configured in mappings
+这是由于在 EsProduct 实体类中使用了 ik_max_word 分词器，但 Elasticsearch 中未安装或配置该分词器插件
+解决方案
+1. 安装 IK 分词器插件
+# 进入 Elasticsearch 容器
+docker exec -it elasticsearch bash
+
+# 下载对应版本的 IK 分词器插件
+# 注意：需要与 Elasticsearch 版本匹配
+elasticsearch-plugin install https://release.infinilabs.com/ik-analysis/elasticsearch-analysis-ik-7.17.3.zip
+
+# 重启 Elasticsearch 容器
+docker restart elasticsearch
+
+
+前端的api
+http://localhost:8085/swagger-ui/
+/sso/login，默认账号密码为test:123456。
+
+
