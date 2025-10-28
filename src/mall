@@ -54,3 +54,7 @@ GRANT ALL PRIVILEGES ON mall.* TO 'root'@'localhost';
 
 -- 刷新权限
 FLUSH PRIVILEGES;
+我们在访问其他接口时都需要携带token，登录获取token接口为/admin/login，默认账号密码为admin:macro123。
+macro123：加密后 （$2a$10$7dRMZZIEyjHFBTnwdFxyve6Sv3iUuVUzVlKDYixvETY694XIYXAWW）
+
+
