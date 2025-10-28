@@ -1,1 +1,37 @@
 
+安装Docker 环境下下载 Elasticsearch 7.17.3
+docker pull elasticsearch:7.17.3
+docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:7.17.3
+
+
+Docker 下载 Kibana 7.17.3 版本
+docker pull kibana:7.17.3
+如果需要连接到本地运行的 Elasticsearch，使用以下命令：
+docker run -d --name kibana -p 5601:5601 --link elasticsearch:elasticsearch -e "ELASTICSEARCH_HOSTS=http://elasticsearch:9200" kibana:7.17.3
+
+
+
+Docker 下载 Logstash 7.17.3 版本
+
+docker pull logstash:7.17.3
+
+docker run -d --name logstash -p 5044:5044 -p 9600:9600  -v C:\Users\Falak\Desktop\Personal\mall\document\elk\logstash.conf:/usr/share/logstash/pipeline/logstash.conf logstash:7.17.3
+
+# 进入容器
+docker exec -it logstash bash
+
+# 备份原配置文件
+cp /usr/share/logstash/pipeline/logstash.conf /usr/share/logstash/pipeline/logstash.conf.backup
+
+# 退出容器后复制新配置文件
+docker cp /path/to/your/logstash.conf logstash:/usr/share/logstash/pipeline/logstash.conf
+
+# 重启容器
+docker restart logstash
+
+docker 下载MongoDB
+docker pull mongo:latest
+
+
+
+
