@@ -1,4 +1,8 @@
 
+文档：https://www.macrozheng.com/mall/start/mall_deploy_windows.html#rabbitmq
+
+
+
 安装Docker 环境下下载 Elasticsearch 7.17.3
 docker pull elasticsearch:7.17.3
 docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:7.17.3
@@ -31,7 +35,17 @@ docker restart logstash
 
 docker 下载MongoDB
 docker pull mongo:latest
+docker run -d --name mongodb -p 27017:27017  -v C:\Users\Falak\Desktop\Personal\MongoDB:/data/db  mongo:latest
 
+
+docker 下载MinIO
+docker run -d --name minio \
+  -p 9000:9000 \
+  -p 9001:9001 \
+  -e "MINIO_ROOT_USER=admin" \
+  -e "MINIO_ROOT_PASSWORD=password" \
+  -v C:\minio\data:/data \
+  minio/minio:latest server /data --console-address ":9001"
 
 
 
