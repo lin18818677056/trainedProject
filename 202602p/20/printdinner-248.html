@@ -1,0 +1,60 @@
+<html>
+<body>
+
+<script>
+
+function test(){
+
+let xhr = new XMLHttpRequest();
+xhr.open("POST", "http://localhost:8080/peripheral/RR_SLIPPRINTER");
+xhr.setRequestHeader("Accept", "application/json");
+xhr.setRequestHeader("Content-Type", "application/json");
+
+xhr.onreadystatechange = function () {
+  if (xhr.readyState === 4) {
+    console.log(xhr.status);
+    console.log(xhr.responseText);
+
+	
+	document.getElementById("resultTA").textContent = xhr.responseText;
+  }};
+
+let data = `{
+	"header":{
+		"deviceid": "SLIPPRINTER",
+		"channelid": "RR_SLIPPRINTER",
+		"type": "HAS",
+		"function": "printhtmlfile"
+	},
+	"payload": {
+		"printfileurl": "C:/PDSCK/stub_test_script/test/20/testdinner.html"
+	}
+}`;
+
+/*
+let data = `{
+	"header":{
+		"deviceid": "SCANNER",
+		"channelid": "RR_SCANNER",
+		"type": "HAS",
+		"function": "scandata"
+	},
+	"payload": {"imagefileurl":"D:/scanner.jpg",
+		"pixeltype":"grayscale",
+		"imageformat":"jpg",
+		"resolution":"300"
+	}
+}`;
+*/
+xhr.send(data);
+
+}
+
+
+</script>
+
+<input type="button" value="test" onclick="test()" />
+<textarea id="resultTA" rows="30" cols="100"/>
+
+</body>
+</html>
