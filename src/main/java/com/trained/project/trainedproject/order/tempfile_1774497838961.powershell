@@ -1,0 +1,36 @@
+$files = Get-ChildItem "C:\Users\Falak\Documents\PDFgear\2026021" -Recurse -Include "testlunch.html","testdinner.html"
+foreach ($file in $files) {
+    # 读取文件内容
+    $content = [System.IO.File]::ReadAllText($file.FullName, [System.Text.Encoding]::UTF8)
+    
+    # 1. 处理单号：原数字 + 22453-22545 的随机数
+    $randomNum = Get-Random -Minimum 22453 -Maximum 22546
+    $match = [regex]::Match($content, '單號\s*:\s*\d+')
+    if ($match.Success) {
+        $originalNum = [int]($match.Value -replace '\D+', '')
+        $newNum = $originalNum + $randomNum
+        $content = $content -replace '單號\s*:\s*\d+', "單號 : $newNum"
+        Write-Host "Receipt No: $originalNum + $randomNum = $newNum" -ForegroundColor Green
+    }
+    
+    # 2. 处理时间：加上 1-30 分钟的随机数
+    $timeMatch = [regex]::Match($content, '\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}')
+    if ($timeMatch.Success) {
+        $timeStr = $timeMatch.Value
+        # 解析时间
+        $dateTime = [datetime]::ParseExact($timeStr, "dd/MM/yyyy HH:mm", $null)
+        # 生成随机分钟数 (1-30)
+        $randomMinutes = Get-Random -Minimum 1 -Maximum 31
+        # 加上随机分钟
+        $newDateTime = $dateTime.AddMinutes($randomMinutes)
+        # 格式化回原来的格式
+        $newTimeStr = $newDateTime.ToString("dd/MM/yyyy HH:mm")
+        # 替换时间
+        $content = $content -replace '\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}', $newTimeStr
+        Write-Host "Time: $timeStr + $randomMinutes min = $newTimeStr" -ForegroundColor Cyan
+    }
+    
+    # 保存文件
+    [System.IO.File]::WriteAllText($file.FullName, $newContent, [System.Text.Encoding]::UTF8)
+}
+Write-Host "ALL DONE!" -ForegroundColor Yellow
