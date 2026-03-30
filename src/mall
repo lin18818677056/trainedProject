@@ -1,0 +1,88 @@
+
+文档：https://www.macrozheng.com/mall/start/mall_deploy_windows.html#rabbitmq
+
+
+
+安装Docker 环境下下载 Elasticsearch 7.17.3
+docker pull elasticsearch:7.17.3
+docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:7.17.3
+
+
+根据错误日志，问题出在 Elasticsearch 的索引映射配置中。具体错误信息表明：
+analyzer [ik_max_word] has not been configured in mappings
+这是由于在 EsProduct 实体类中使用了 ik_max_word 分词器，但 Elasticsearch 中未安装或配置该分词器插件
+解决方案
+1. 安装 IK 分词器插件
+# 进入 Elasticsearch 容器
+docker exec -it elasticsearch bash
+
+# 下载对应版本的 IK 分词器插件
+# 注意：需要与 Elasticsearch 版本匹配
+elasticsearch-plugin install https://release.infinilabs.com/ik-analysis/elasticsearch-analysis-ik-7.17.3.zip
+
+# 重启 Elasticsearch 容器
+docker restart elasticsearch
+
+
+
+Docker 下载 Kibana 7.17.3 版本
+docker pull kibana:7.17.3
+如果需要连接到本地运行的 Elasticsearch，使用以下命令：
+docker run -d --name kibana -p 5601:5601 --link elasticsearch:elasticsearch -e "ELASTICSEARCH_HOSTS=http://elasticsearch:9200" kibana:7.17.3
+
+
+
+Docker 下载 Logstash 7.17.3 版本
+
+docker pull logstash:7.17.3
+
+docker run -d --name logstash -p 5044:5044 -p 9600:9600  -v C:\Users\Falak\Desktop\Personal\mall\document\elk\logstash.conf:/usr/share/logstash/pipeline/logstash.conf logstash:7.17.3
+
+# 进入容器
+docker exec -it logstash bash
+
+# 备份原配置文件
+cp /usr/share/logstash/pipeline/logstash.conf /usr/share/logstash/pipeline/logstash.conf.backup
+
+# 退出容器后复制新配置文件
+docker cp /path/to/your/logstash.conf logstash:/usr/share/logstash/pipeline/logstash.conf
+
+# 重启容器
+docker restart logstash
+
+docker 下载MongoDB
+docker pull mongo:latest
+docker run -d --name mongodb -p 27017:27017  -v C:\Users\Falak\Desktop\Personal\MongoDB:/data/db  mongo:latest
+
+
+docker 下载MinIO
+docker run -d --name minio -p 9000:9000 -p 9001:9001 -e "MINIO_ROOT_USER=minioadmin" -e "MINIO_ROOT_PASSWORD=minioadmin" -v C:\Users\Falak\Desktop\Personal\minio:/data minio/minio:latest server /data --console-address ":9001"
+
+
+mysql创建数据库mall
+连接串
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mall?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false&allowMultiQueries=true
+
+CREATE DATABASE mall CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- 授予用户权限
+GRANT ALL PRIVILEGES ON mall.* TO 'root'@'localhost';
+
+-- 刷新权限
+FLUSH PRIVILEGES;
+我们在访问其他接口时都需要携带token，登录获取token接口为/admin/login，默认账号密码为admin:macro123。
+macro123：加密后 （$2a$10$7dRMZZIEyjHFBTnwdFxyve6Sv3iUuVUzVlKDYixvETY694XIYXAWW）
+
+
+
+
+
+
+
+
+前端的api
+http://localhost:8085/swagger-ui/
+/sso/login，默认账号密码为test:123456。
+
+
